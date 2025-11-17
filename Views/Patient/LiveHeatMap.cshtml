@@ -1,0 +1,89 @@
+@{
+    ViewData["Title"] = "Heatmap Viewer";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<div class="mb-3">
+    <input type="text" id="fileName" placeholder="Enter CSV filename (e.g. sample.csv)" class="form-control w-50 d-inline-block" />
+    <button id="loadBtn" class="btn btn-primary ms-2">Load</button>
+</div>
+
+<div id="heatmapContainer" class="mt-4"></div>
+
+@section Scripts {
+<script>
+document.getElementById("loadBtn").addEventListener("click", async () => {
+    const fileName = document.getElementById("fileName").value.trim();
+    const container = document.getElementById("heatmapContainer");
+    container.innerHTML = "";
+
+    if (!fileName) {
+        alert("Please enter a CSV filename.");
+        return;
+    }
+
+    try {
+        const response = await fetch(`/heatmap/data/${fileName}`);
+        if (!response.ok) {
+            const error = await response.json();
+            alert("Error: " + error.error);
+            return;
+        }
+
+        const data = await response.json();
+        renderHeatmap(data);
+    } catch (err) {
+        alert("Failed to load data: " + err.message);
+    }
+});
+
+function renderHeatmap(data) {
+    const container = document.getElementById("heatmapContainer");
+    container.innerHTML = "";
+
+    // ✅ Create a proper grid layout based on CSV dimensions
+    const rows = data.length;
+    const cols = data[0].length;
+    const cellSize = 20; // px per cell
+
+    container.style.display = "grid";
+    container.style.gridTemplateColumns = `repeat(${cols}, ${cellSize}px)`;
+    container.style.gridTemplateRows = `repeat(${rows}, ${cellSize}px)`;
+    container.style.gap = "1px";
+    container.style.background = "#ccc";
+    container.style.width = `${cols * (cellSize + 1)}px`;
+    container.style.border = "1px solid #aaa";
+
+    // Find min and max for scaling
+    const flat = data.flat();
+    const minVal = Math.min(...flat);
+    const maxVal = Math.max(...flat);
+
+    // ✅ Generate cells for heatmap
+    for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+            const value = data[r][c];
+            const normalized = (value - minVal) / (maxVal - minVal || 1);
+            const color = getHeatColor(normalized);
+
+            const cell = document.createElement("div");
+            cell.style.width = `${cellSize}px`;
+            cell.style.height = `${cellSize}px`;
+            cell.style.backgroundColor = color;
+            cell.title = value.toFixed(1); // hover tooltip
+            container.appendChild(cell);
+        }
+    }
+}
+
+// ✅ Converts a 0–1 normalized value to a color (blue → red)
+function getHeatColor(value) {
+    const r = Math.floor(255 * value);
+    const g = Math.floor(255 * (1 - value));
+    const b = Math.floor(150 * (1 - value));
+    return `rgb(${r}, ${g}, ${b})`;
+}
+</script>
+}
+

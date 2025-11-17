@@ -1,0 +1,109 @@
+@{
+    ViewData["Title"] = "Past Heat Map Viewer";
+}
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3>Past Heat Map Viewer</h3>
+        <a asp-controller="Patient" asp-action="Dashboard" class="btn btn-outline-secondary">← Back to Dashboard</a>
+    </div>
+
+    <!-- Time Range -->
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center">
+                <label class="form-label fw-bold">Time Range Selection</label>
+                <div>
+                    <select class="form-select d-inline-block w-auto">
+                        <option>Last 24 Hours</option>
+                        <option>Last 7 Days</option>
+                        <option>Last 30 Days</option>
+                    </select>
+                    <button class="btn btn-outline-primary ms-2">Export Data</button>
+                </div>
+            </div>
+            <input type="range" class="form-range mt-3" min="0" max="24" value="12" />
+            <div class="d-flex justify-content-between text-muted small">
+                <span>24h ago</span>
+                <span>12h ago</span>
+                <span>Now</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Historical Pressure Data -->
+        <div class="col-md-8">
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-body text-center" style="background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);">
+                    <p class="fw-bold text-muted">Heat Map at 12h ago</p>
+                    <p class="text-secondary">Historical pressure distribution</p>
+                    <img src="/images/past-map.png" alt="Past Heat Map" class="img-fluid rounded mt-2" />
+                </div>
+            </div>
+
+            <!-- Pressure Scale -->
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-body">
+                    <label class="fw-bold mb-2">Pressure Scale</label>
+                    <div class="progress" style="height: 10px;">
+                        <div class="progress-bar bg-info" style="width: 33%"></div>
+                        <div class="progress-bar bg-warning" style="width: 33%"></div>
+                        <div class="progress-bar bg-danger" style="width: 34%"></div>
+                    </div>
+                    <div class="d-flex justify-content-between small text-muted mt-1">
+                        <span>Low (0–30 mmHg)</span>
+                        <span>Medium (30–60 mmHg)</span>
+                        <span>High (60+ mmHg)</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pressure Over Time -->
+            <div class="card shadow-sm border-0">
+                <div class="card-body text-center">
+                    <p class="fw-bold text-muted mb-1">Pressure Over Time</p>
+                    <p class="text-secondary small">Graph: Peak Pressure vs Time</p>
+                    <div class="border rounded p-4 bg-light">
+                        <p class="text-muted fst-italic">Live chart showing pressure trends</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Snapshots -->
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-light fw-bold">Recent Snapshots</div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item d-flex justify-content-between">
+                            <span>7 hours ago</span>
+                            <span class="badge bg-success">Normal</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between">
+                            <span>14 hours ago</span>
+                            <span class="badge bg-danger">High Pressure</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between">
+                            <span>18 hours ago</span>
+                            <span class="badge bg-warning text-dark">Elevated</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between">
+                            <span>1 day ago</span>
+                            <span class="badge bg-success">Normal</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between">
+                            <span>1.5 days ago</span>
+                            <span class="badge bg-success">Normal</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="text-center mt-4 text-muted small">
+        Graphene Trace © 2025 | Sensor System Prototype
+    </footer>
+</div>
