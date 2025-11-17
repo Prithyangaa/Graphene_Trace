@@ -1,0 +1,125 @@
+@{
+    ViewData["Title"] = "Clinician Dashboard";
+}
+
+<!-- ===== Top Navigation Bar ===== -->
+<header style="display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; border-bottom: 1px solid #ccc;">
+    <div style="display: flex; align-items: center; gap: 10px;">
+        <h3 style="margin: 0;">Graphene Trace</h3>
+        <span style="font-size: 1.2rem; color: gray;">Clinician Dashboard</span>
+    </div>
+
+    <div style="display: flex; gap: 20px; align-items: center;">
+        <i class="bi bi-bell" style="font-size: 1.5rem; cursor: pointer;"></i>
+        <i class="bi bi-person" style="font-size: 1.5rem; cursor: pointer;"></i>
+        <i class="bi bi-box-arrow-right" style="font-size: 1.5rem; cursor: pointer;"></i>
+    </div>
+</header>
+
+<!-- ===== Search Bar ===== -->
+<div class="p-3 border-bottom bg-light">
+    <input type="text" class="form-control" placeholder="🔍 Browse Patient - Search by name or ID..." />
+</div>
+
+<!-- ===== Priority Patient Map ===== -->
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-2">
+        <h5>Priority Patient Map</h5>
+        <small class="text-muted">⚠️ 6 patients requiring attention</small>
+    </div>
+
+    <div class="d-flex overflow-auto gap-3 pb-3">
+        <!-- Critical -->
+        <div class="card text-white bg-dark p-3" style="min-width: 250px;">
+            <span class="badge bg-danger mb-2">CRITICAL</span>
+            <h6>Robert Johnson</h6>
+            <small>PT-1047 • Age: 45</small>
+            <p class="mt-2 mb-1">Sustained high pressure - sacral region</p>
+            <small>Pressure Index: 187 mmHg<br>Last Reading: 2 min ago</small>
+        </div>
+
+        <!-- High -->
+        <div class="card text-white bg-secondary p-3" style="min-width: 250px;">
+            <span class="badge bg-warning text-dark mb-2">HIGH</span>
+            <h6>John Doe</h6>
+            <small>PT-1024 • Age: 52</small>
+            <p class="mt-2 mb-1">Extended contact time - 90 mins</p>
+            <small>Pressure Index: 145 mmHg<br>Last Reading: 10 min ago</small>
+        </div>
+
+        <!-- High -->
+        <div class="card text-white bg-secondary p-3" style="min-width: 250px;">
+            <span class="badge bg-warning text-dark mb-2">HIGH</span>
+            <h6>James Brown</h6>
+            <small>PT-1049 • Age: 71</small>
+            <p class="mt-2 mb-1">Pressure spike detected</p>
+            <small>Pressure Index: 138 mmHg<br>Last Reading: 15 min ago</small>
+        </div>
+
+        <!-- Medium -->
+        <div class="card text-white bg-secondary p-3" style="min-width: 250px;">
+            <span class="badge bg-info text-dark mb-2">MEDIUM</span>
+            <h6>Michael Davis</h6>
+            <small>PT-1025 • Age: 58</small>
+            <p class="mt-2 mb-1">Position change overdue</p>
+            <small>Pressure Index: 112 mmHg<br>Last Reading: 25 min ago</small>
+        </div>
+    </div>
+
+    <small class="text-muted">← Most Urgent | Least Urgent →</small>
+</div>
+
+<!-- ===== Lower Cards ===== -->
+<div class="container mt-4 mb-5">
+    <div class="row g-3">
+        <!-- Messages -->
+        <div class="col-md-3">
+            <div class="card p-3 shadow-sm">
+                <h6>Messages</h6>
+                <p>3 unread<br><span class="text-primary">Patient communications</span></p>
+                <small>Last: John Doe — 1 hour ago</small><br>
+                <a href="#" class="text-primary small">View all →</a>
+            </div>
+        </div>
+
+        <!-- Appointments -->
+        <div class="col-md-3">
+            <div class="card p-3 shadow-sm">
+                <h6>Appointments</h6>
+                <p>Today: 5 scheduled<br>Next: 2:00 PM</p>
+                <small>Upcoming: 12 this week</small><br>
+                <a href="#" class="text-primary small">View calendar →</a>
+            </div>
+        </div>
+
+        <!-- Patient List -->
+        <div class="col-md-3">
+            <div class="card p-3 shadow-sm">
+                <h6>Patient List</h6>
+                <p>Total Active: 24<br>Stable: 18</p>
+                <small>Normal readings</small><br>
+                <a href="#" class="text-primary small">View all →</a>
+            </div>
+        </div>
+
+        <!-- Settings -->
+        <div class="col-md-3">
+            <div class="card p-3 shadow-sm">
+                <h6>Settings</h6>
+                <ul class="list-unstyled small mb-0">
+                    <li>• Alert Thresholds</li>
+                    <li>• Preferences</li>
+                    <li>• Account</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== Footer ===== -->
+<footer class="text-center text-muted small py-3 border-top">
+    Graphene Trace © 2025 | Sensore System Prototype
+</footer>
+
+<!-- Bootstrap Icons (for bell, profile, logout) -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">

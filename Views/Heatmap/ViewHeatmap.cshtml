@@ -1,0 +1,134 @@
+@{
+    ViewData["Title"] = "Live Patient Pressure Heatmap";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<div style="margin-bottom:10px;">
+    <input type="text" id="fileName" value="data.csv" style="padding:5px; width:250px;" />
+    <button id="loadBtn" style="padding:5px 10px;">Load</button>
+    <button id="playBtn" style="padding:5px 10px;">▶ Play</button>
+    <button id="pauseBtn" style="padding:5px 10px;">⏸ Pause</button>
+</div>
+
+<div style="margin-bottom:10px;">
+    <input type="range" id="frameSlider" min="0" max="0" step="1" value="0" style="width:500px;" />
+    <span id="frameLabel">Frame: 0 | Time: 0s</span>
+</div>
+
+<canvas id="heatmapCanvas" width="512" height="512" style="border:1px solid #444;"></canvas>
+
+<script>
+let currentFrame = 0;
+let totalFrames = 0;
+let isPlaying = false;
+let frameTimer = null;
+let secondTimer = null;
+let elapsedSeconds = 0;
+
+const FRAME_INTERVAL = 10000; // 10 seconds per frame
+const PRESSURE_MIN = 0;       // fixed min pressure (mmHg)
+const PRESSURE_MAX = 200;     // fixed max pressure (mmHg)
+const PRESSURE_RANGE = PRESSURE_MAX - PRESSURE_MIN;
+
+document.getElementById("loadBtn").addEventListener("click", async () => {
+    const fileName = document.getElementById("fileName").value.trim();
+    if (!fileName) return alert("Enter CSV filename");
+
+    currentFrame = 0;
+    elapsedSeconds = 0;
+    await loadFrame(fileName, currentFrame);
+});
+
+document.getElementById("playBtn").addEventListener("click", async () => {
+    if (isPlaying) return;
+    isPlaying = true;
+    const fileName = document.getElementById("fileName").value.trim();
+    startPlayback(fileName);
+});
+
+document.getElementById("pauseBtn").addEventListener("click", () => {
+    isPlaying = false;
+    clearInterval(frameTimer);
+    clearInterval(secondTimer);
+});
+
+document.getElementById("frameSlider").addEventListener("input", async (e) => {
+    const fileName = document.getElementById("fileName").value.trim();
+    currentFrame = parseInt(e.target.value);
+    elapsedSeconds = currentFrame * 10;
+    await loadFrame(fileName, currentFrame);
+});
+
+function startPlayback(fileName) {
+    clearInterval(frameTimer);
+    clearInterval(secondTimer);
+
+    elapsedSeconds = currentFrame * 10;
+    updateLabel();
+
+    frameTimer = setInterval(async () => {
+        if (!isPlaying) return;
+
+        currentFrame++;
+        if (currentFrame >= totalFrames) {
+            clearInterval(frameTimer);
+            clearInterval(secondTimer);
+            isPlaying = false;
+            return;
+        }
+
+        await loadFrame(fileName, currentFrame);
+        document.getElementById("frameSlider").value = currentFrame;
+        elapsedSeconds = currentFrame * 10;
+    }, FRAME_INTERVAL);
+
+    secondTimer = setInterval(() => {
+        if (isPlaying) {
+            elapsedSeconds++;
+            updateLabel();
+        }
+    }, 1000);
+}
+
+function updateLabel() {
+    document.getElementById("frameLabel").textContent =
+        `Frame: ${currentFrame} | Time: ${elapsedSeconds}s`;
+}
+
+async function loadFrame(fileName, frame) {
+    const response = await fetch(`/heatmap/data/${fileName}?frame=${frame}`);
+    if (!response.ok) return console.error("Frame fetch failed");
+
+    const { data, totalFrames: total } = await response.json();
+    totalFrames = total;
+    document.getElementById("frameSlider").max = totalFrames - 1;
+
+    renderCanvasHeatmap(data);
+    updateLabel();
+}
+
+function renderCanvasHeatmap(data) {
+    const canvas = document.getElementById("heatmapCanvas");
+    const ctx = canvas.getContext("2d");
+    const rows = data.length;
+    const cols = data[0].length;
+    const cellSize = Math.floor(canvas.width / cols);
+
+    for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+            let normalized = (data[r][c] - PRESSURE_MIN) / PRESSURE_RANGE;
+            normalized = Math.min(Math.max(normalized, 0), 1); // clamp 0-1
+            ctx.fillStyle = getHeatColor(normalized);
+            ctx.fillRect(c * cellSize, r * cellSize, cellSize, cellSize);
+        }
+    }
+}
+
+// Blue → Red gradient
+function getHeatColor(v) {
+    const h = (1.0 - v) * 240;
+    return `hsl(${h}, 100%, 50%)`;
+}
+</script>
+
