@@ -1,7 +1,7 @@
-@model GrapheneTrace.Models.LoginViewModel
 @{
     ViewData["Title"] = "Login";
 }
+
 <div class="login-container">
     <div class="login-box">
         <div class="logo">GT</div>
@@ -10,12 +10,16 @@
 
         <form asp-action="Login" method="post">
             <label>Email</label>
-            <input asp-for="Email" placeholder="patient@example.com" class="input-box" />
+            <input name="Email" type="email" class="input-box" required placeholder="example@gmail.com" />
+
             <label>Password</label>
-            <input asp-for="Password" type="password" class="input-box" />
+            <input name="Password" type="password" class="input-box" required />
+
             <button type="submit" class="btn">Login</button>
         </form>
 
-        <p class="register-link">Don't have an account? <a asp-action="Register">Register</a></p>
+        <p class="register-link">Don't have an account?
+            <a asp-action="Register">Register</a>
+        </p>
     </div>
 </div>

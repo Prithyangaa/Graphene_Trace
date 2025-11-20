@@ -4,8 +4,10 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// load connection string from configuration (appsettings.Development.json when in dev)
+// Load .env variables if present
+DotNetEnv.Env.Load();
 
+// Read from environment variables
 var connectionString = $"server={Environment.GetEnvironmentVariable("MYSQL_HOST")};" +
                        $"port={Environment.GetEnvironmentVariable("MYSQL_PORT")};" +
                        $"user={Environment.GetEnvironmentVariable("MYSQL_USER")};" +
@@ -13,7 +15,12 @@ var connectionString = $"server={Environment.GetEnvironmentVariable("MYSQL_HOST"
                        $"database={Environment.GetEnvironmentVariable("MYSQL_DATABASE")}";
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
+    options.UseMySql(
+        builder.Configuration.GetConnectionString("DefaultConnection"),
+        ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("DefaultConnection"))
+    )
+);
+
 
 builder.Services.AddControllersWithViews();
 

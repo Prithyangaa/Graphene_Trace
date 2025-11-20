@@ -1,21 +1,15 @@
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-
-namespace GrapheneTrace.Models
+namespace GrapheneTrace.Model
 {
     public class User
     {
-        public int Id { get; set; }
+        public int UserId { get; set; }
+        public required string FullName { get; set; }
+        public required string Email { get; set; }
+        public required string PasswordHash { get; set; }
 
-        [Required, MaxLength(255)]
-        public string Email { get; set; } = string.Empty;
+        public int RoleId { get; set; }
+        public Role Role { get; set; }
 
-        [Required]
-        // store hashed password in LONGTEXT to be safe for length
-        [Column(TypeName = "longtext")]
-        public string PasswordHash { get; set; } = string.Empty;
-
-        [Required, MaxLength(50)]
-        public string Role { get; set; } = string.Empty;
+        public DateTime CreatedAt { get; set; }
     }
 }

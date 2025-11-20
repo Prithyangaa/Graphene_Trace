@@ -1,6 +1,6 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-using GrapheneTrace.Models;
+using GrapheneTrace.Model;
 
 namespace GrapheneTrace.Controllers;
 
