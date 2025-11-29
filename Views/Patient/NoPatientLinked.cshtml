@@ -1,0 +1,17 @@
+@{
+    ViewData["Title"] = "Data Sync Pending";
+}
+
+<div class="container py-5">
+    <div class="card shadow-sm border-0">
+        <div class="card-body text-center py-5">
+            <h3 class="mb-3">Your monitoring data is not connected yet</h3>
+            <p class="text-muted mb-4">
+                Your account is active, but we haven’t linked your pressure sensor data to Graphene Trace yet.
+                Please contact your clinician or system administrator. Once it’s connected, your heat maps
+                and alerts will appear here automatically.
+            </p>
+            <a href="@Url.Action("Logout", "Auth")" class="btn btn-outline-secondary">Back to Login</a>
+        </div>
+    </div>
+</div>

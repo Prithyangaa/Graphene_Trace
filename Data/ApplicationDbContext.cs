@@ -1,30 +1,80 @@
 using Microsoft.EntityFrameworkCore;
-using GrapheneTrace.Models;
+using GrapheneTrace.Model;
 
 namespace GrapheneTrace.Data
 {
     public class ApplicationDbContext : DbContext
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
-            : base(options) { }
+            : base(options)
+        {
+        }
 
-        public DbSet<User> Users { get; set; }
+        public DbSet<User> Users { get; set; } = null!;
+        public DbSet<Role> Roles { get; set; } = null!;
+        public DbSet<Patient> Patients { get; set; } = null!;
+        public DbSet<Clinician> Clinicians { get; set; } = null!;
+        public DbSet<ClinicianPatientAssignment> ClinicianPatientAssignments { get; set; } = null!;
+        public DbSet<Alert> Alerts { get; set; } = null!;
+        public DbSet<Notification> Notifications { get; set; } = null!;
+        public DbSet<PatientMessage> PatientMessages { get; set; } = null!;   // 🔹 NEW
+        public DbSet<SensorReading> SensorReadings { get; set; } = null!;
+        public DbSet<AlertEscalationHistory> AlertEscalationHistories { get; set; }
+        public DbSet<AuditLog> AuditLogs { get; set; }
+        public DbSet<AuthMetadata> AuthMetadata { get; set; }
+
+        public DbSet<Appointment> Appointments { get; set; } = null!;
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<User>()
-                .Property(u => u.Email)
-                .HasColumnType("varchar(255)");
-
-            modelBuilder.Entity<User>()
-                .Property(u => u.PasswordHash)
-                .HasColumnType("longtext");
-
-            modelBuilder.Entity<User>()
-                .Property(u => u.Role)
-                .HasColumnType("varchar(50)");
-
             base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<User>()
+                .HasOne(u => u.Role)
+                .WithMany()
+                .HasForeignKey(u => u.RoleId);
+
+            modelBuilder.Entity<ClinicianPatientAssignment>()
+                .HasOne(a => a.Clinician)
+                .WithMany()
+                .HasForeignKey(a => a.ClinicianId);
+
+            modelBuilder.Entity<ClinicianPatientAssignment>()
+                .HasOne(a => a.Patient)
+                .WithMany()
+                .HasForeignKey(a => a.PatientId);
+
+            modelBuilder.Entity<Alert>()
+                .HasOne<Patient>()
+                .WithMany()
+                .HasForeignKey(a => a.PatientId);
+
+            modelBuilder.Entity<Notification>()
+                .HasOne<User>()
+                .WithMany()
+                .HasForeignKey(n => n.UserId);
+
+            modelBuilder.Entity<Notification>()
+                .HasOne<Alert>()
+                .WithMany()
+                .HasForeignKey(n => n.AlertId);
+
+            modelBuilder.Entity<AlertEscalationHistory>()
+                .HasOne<Alert>()
+                .WithMany()
+                .HasForeignKey(e => e.AlertId);
+
+            modelBuilder.Entity<AuthMetadata>()
+                .HasOne<User>()
+                .WithMany()
+                .HasForeignKey(a => a.UserId);
+
+            modelBuilder.Entity<SensorReading>()
+                .HasOne<Patient>()
+                .WithMany()
+                .HasForeignKey(s => s.PatientId);
         }
     }
 }
+

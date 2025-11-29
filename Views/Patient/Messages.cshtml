@@ -1,0 +1,79 @@
+@model IEnumerable<GrapheneTrace.Model.PatientMessage>
+
+@{
+    ViewData["Title"] = "Clinician Messages";
+}
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+
+<div class="gt-page">
+    <div class="container py-3">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h4 class="mb-0">Clinician Messages</h4>
+            <a href="@Url.Action("Dashboard", "Patient")" class="btn btn-outline-secondary btn-sm">
+                <i class="bi bi-arrow-left"></i> Back to Dashboard
+            </a>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-md-3">
+                <div class="gt-card" style="cursor:default;">
+                    <div class="fw-semibold mb-2">Conversations</div>
+                    <div class="small text-muted">
+                        (Prototype) All messages shown in one thread for now.
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-9">
+                <div class="gt-card mb-3" style="cursor:default;">
+                    <div class="fw-semibold mb-3">Today</div>
+
+                    @foreach (var m in Model.OrderBy(m => m.CreatedAt))
+                    {
+                        bool fromClinician = m.FromClinician;
+                        <div class="d-flex mb-2 @(fromClinician ? "" : "justify-content-end")">
+                            @if (fromClinician)
+                            {
+                                <div class="me-2">
+                                    <div class="gt-avatar" style="width:40px;height:40px;font-size:.9rem;">SC</div>
+                                </div>
+                            }
+
+                            <div class="p-2 rounded-3" style="background:#f1f5f9; max-width:75%;">
+                                <div class="small text-muted mb-1">
+                                    @(fromClinician ? "Clinician" : "You")
+                                    · @m.CreatedAt.ToLocalTime().ToString("HH:mm")
+                                </div>
+                                <div>@m.Content</div>
+                            </div>
+
+                            @if (!fromClinician)
+                            {
+                                <div class="ms-2">
+                                    <div class="gt-avatar" style="width:40px;height:40px;font-size:.9rem;">You</div>
+                                </div>
+                            }
+                        </div>
+                    }
+
+                    @if (!Model.Any())
+                    {
+                        <p class="text-muted mb-0">No messages yet. Start by sending one below.</p>
+                    }
+                </div>
+
+                <div class="gt-card" style="cursor:default;">
+                    <div class="fw-semibold mb-2">New Message</div>
+                    <form asp-action="SendMessage" method="post">
+                        <textarea name="content" class="form-control mb-2" rows="3"
+                            placeholder="Type your message or question for your clinician..."></textarea>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-send me-1"></i> Send Message
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

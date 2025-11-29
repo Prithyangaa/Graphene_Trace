@@ -1,0 +1,39 @@
+@model List<GrapheneTrace.Model.AuditLog>
+
+<h2>System Logs</h2>
+
+@if (!Model.Any())
+{
+    <p class="text-muted">No logs found</p>
+}
+else
+{
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Log ID</th>
+                <th>User</th>
+                <th>Action</th>
+                <th>Table</th>
+                <th>Record</th>
+                <th>Timestamp</th>
+                <th>Details</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var log in Model)
+            {
+                <tr>
+                    <td>@log.AuditId</td>
+                    <td>@log.UserId</td>
+                    <td>@log.ActionType</td>
+                    <td>@log.TableName</td>
+                    <td>@log.RecordId</td>
+                    <td>@log.ActionTimestamp.ToLocalTime()</td>
+                    <td>@log.Details</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+

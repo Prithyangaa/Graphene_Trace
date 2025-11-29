@@ -1,0 +1,152 @@
+@model GrapheneTrace.Model.SystemOverviewViewModel
+
+@{
+    ViewData["Title"] = "System Overview";
+}
+
+<link rel="stylesheet" 
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+
+<div class="container mt-4">
+
+    <a href="/Admin/Dashboard" class="text-muted small">
+        <i class="bi bi-chevron-left"></i> Back to Dashboard
+    </a>
+
+    <h3 class="mt-2 mb-4">System Overview</h3>
+
+    <!-- SYSTEM STATUS -->
+    <div class="card shadow-sm rounded-4 p-4 mb-4">
+        <h6 class="text-muted mb-3">System Health</h6>
+
+        <div class="row text-center">
+            <div class="col-md-3">
+                <div class="fw-bold text-success">@Model.SystemStatus</div>
+                <small>Status</small>
+            </div>
+
+            <div class="col-md-3">
+                <div class="fw-bold">@Model.UptimePercentage %</div>
+                <small>System Uptime</small>
+            </div>
+
+            <div class="col-md-3">
+                <div class="fw-bold">@Model.AvgResponseTimeMs ms</div>
+                <small>Avg Response Time</small>
+            </div>
+
+            <div class="col-md-3">
+                <div class="fw-bold">@Model.LastUpdated.ToLocalTime().ToString("dd MMM yyyy HH:mm")</div>
+                <small>Last Updated</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- USERS + ALERTS -->
+    <div class="row g-4">
+
+        <!-- USERS -->
+        <div class="col-md-6">
+            <div class="card p-3 shadow-sm rounded-4">
+                <strong class="mb-3">User Overview</strong>
+
+                <div class="row text-center mt-3">
+                    <div class="col-3">
+                        <div class="fw-bold">@Model.TotalUsers</div>
+                        <small>Total Users</small>
+                    </div>
+
+                    <div class="col-3">
+                        <div class="fw-bold">@Model.TotalPatients</div>
+                        <small>Patients</small>
+                    </div>
+
+                    <div class="col-3">
+                        <div class="fw-bold">@Model.TotalClinicians</div>
+                        <small>Clinicians</small>
+                    </div>
+
+                    <div class="col-3">
+                        <div class="fw-bold">@Model.TotalAdmins</div>
+                        <small>Admins</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ALERTS -->
+        <div class="col-md-6">
+            <div class="card p-3 shadow-sm rounded-4">
+                <strong class="mb-3">Alerts Overview</strong>
+
+                <div class="row text-center mt-3">
+                    <div class="col-3">
+                        <div class="fw-bold">@Model.TotalAlerts</div>
+                        <small>Total Alerts</small>
+                    </div>
+
+                    <div class="col-3">
+                        <div class="fw-bold text-danger">@Model.CriticalAlerts</div>
+                        <small>Critical</small>
+                    </div>
+
+                    <div class="col-3">
+                        <div class="fw-bold text-warning">@Model.WarningAlerts</div>
+                        <small>Warnings</small>
+                    </div>
+
+                    <div class="col-3">
+                        <div class="fw-bold">@Model.OpenAlerts</div>
+                        <small>Open Alerts</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PERFORMANCE METRICS -->
+    <div class="card shadow-sm rounded-4 p-4 mt-4">
+        <h6 class="text-muted mb-3">Performance Metrics</h6>
+
+        <div class="row text-center">
+            <div class="col-md-4">
+                <div class="fw-bold">@Model.CpuUsage %</div>
+                <small>CPU Usage</small>
+            </div>
+
+            <div class="col-md-4">
+                <div class="fw-bold">@Model.RamUsage %</div>
+                <small>Memory Usage</small>
+            </div>
+
+            <div class="col-md-4">
+                <div class="fw-bold">@Model.ActiveSessions</div>
+                <small>Active Sessions</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- ACTIVITY GRAPH -->
+    <div class="card shadow-sm rounded-4 p-4 mt-4">
+        <h6 class="text-muted mb-3">System Activity</h6>
+        <canvas id="activityChart" height="120"></canvas>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    new Chart(document.getElementById("activityChart"), {
+        type: 'line',
+        data: {
+            labels: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.ActivityLabels)),
+            datasets: [{
+                label: 'Activity',
+                data: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.ActivityCounts)),
+                borderColor: 'rgba(99, 102, 241, 0.8)',
+                tension: 0.3
+            }]
+        }
+    });
+</script>
+

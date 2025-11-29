@@ -4,18 +4,17 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// load connection string from configuration (appsettings.Development.json when in dev)
+// Load .env
+Env.Load();
 
-var connectionString = $"server={Environment.GetEnvironmentVariable("MYSQL_HOST")};" +
-                       $"port={Environment.GetEnvironmentVariable("MYSQL_PORT")};" +
-                       $"user={Environment.GetEnvironmentVariable("MYSQL_USER")};" +
-                       $"password={Environment.GetEnvironmentVariable("MYSQL_PASSWORD")};" +
-                       $"database={Environment.GetEnvironmentVariable("MYSQL_DATABASE")}";
+var conn = builder.Configuration.GetConnectionString("DefaultConnection");
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
+    options.UseMySql(conn, ServerVersion.AutoDetect(conn))
+);
 
 builder.Services.AddControllersWithViews();
+builder.Services.AddSession();
 
 var app = builder.Build();
 
@@ -27,13 +26,15 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-
 app.UseRouting();
 
+app.UseSession();
 app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Auth}/{action=Login}/{id?}");
+    pattern: "{controller=Auth}/{action=Login}/{id?}"
+);
 
 app.Run();
+

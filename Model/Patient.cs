@@ -1,19 +1,37 @@
-using System;
-using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace GrapheneTrace.Model
 {
+    [Table("patients")]
     public class Patient
     {
-        public int Id { get; set; }
-        public string FullName { get; set; } = string.Empty;
-        public string Gender { get; set; } = string.Empty;
-        public DateTime DOB { get; set; }
-        public string Email { get; set; } = string.Empty;
-        public string Phone { get; set; } = string.Empty;
-        public string Address { get; set; } = string.Empty;
-        public List<string> Notifications { get; set; } = new List<string>();
-        public string CurrentHeartRateMap { get; set; } = "/images/current-map.png";
-        public string PastHeartRateMap { get; set; } = "/images/past-map.png";
+        [Key]
+        [Column("patient_id")]
+        public int PatientId { get; set; }
+
+        [Column("user_id")]
+        public int? UserId { get; set; }   // 🔹 NEW
+
+        [Column("full_name")]
+        public string? FullName { get; set; }
+
+        [Column("age")]
+        public int? Age { get; set; }
+
+        [Column("gender")]
+        public string? Gender { get; set; }
+
+        [Column("contact_number")]
+        public string? ContactNumber { get; set; }
+
+        [Column("risk_level")]
+        public string? RiskLevel { get; set; }
+
+        [Column("current_status")]
+        public string? CurrentStatus { get; set; }
+
+        [Column("created_at")]
+        public DateTime CreatedAt { get; set; }
     }
 }

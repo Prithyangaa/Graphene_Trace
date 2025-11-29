@@ -1,0 +1,108 @@
+@model List<GrapheneTrace.Model.DeviceViewModel>
+
+@{
+    ViewData["Title"] = "Devices";
+}
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+
+<style>
+    .gt-page {
+        background: #f5f7fb;
+        min-height: 100vh;
+        padding: 2rem 0;
+    }
+
+    .device-card {
+        background: #ffffff;
+        border-radius: 16px;
+        padding: 1.4rem 1.6rem;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        transition: 0.15s ease-in-out;
+        cursor: pointer;
+        margin-bottom: 1rem;
+    }
+
+    .device-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+    }
+
+    .device-header {
+        font-weight: 600;
+        font-size: 1rem;
+        color: #1e293b;
+    }
+
+    .device-sub {
+        color: #64748b;
+        font-size: 0.85rem;
+    }
+
+    .status-badge {
+        padding: 4px 10px;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+
+    .online { background: #dcfce7; color: #166534; }
+    .offline { background: #fee2e2; color: #b91c1c; }
+
+    .reading-values {
+        font-size: 0.85rem;
+        margin-top: .5rem;
+        color: #475569;
+    }
+</style>
+
+<div class="gt-page">
+    <div class="container">
+
+        <h3 class="mb-4">Devices</h3>
+
+        @if (Model.Count == 0)
+        {
+            <div class="alert alert-info">
+                No device readings found in the database.
+            </div>
+        }
+        else
+        {
+            @foreach (var d in Model)
+            {
+                <div class="device-card" onclick="location.href='/Admin/DeviceDetails/@d.PatientId'">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="device-header">@d.PatientName</div>
+                            <div class="device-sub">Patient ID: @d.PatientId</div>
+                        </div>
+
+                        <div>
+                            @if (d.IsActive)
+                            {
+                                <span class="status-badge online">Online</span>
+                            }
+                            else
+                            {
+                                <span class="status-badge offline">Offline</span>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="reading-values mt-2">
+                        <strong>Last Reading:</strong> 
+                        P: @d.Pressure , T: @d.Temperature  
+                        <br />
+                        <span class="text-muted">
+                            Updated @d.LastUpdated.ToLocalTime().ToString("dd MMM yyyy HH:mm")
+                        </span>
+                    </div>
+                </div>
+            }
+        }
+
+    </div>
+</div>
+

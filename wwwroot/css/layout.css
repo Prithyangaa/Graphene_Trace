@@ -1,0 +1,47 @@
+/* Layout global styling */
+
+body {
+    background: #f5f7fc;
+}
+
+.navbar-brand {
+    font-size: 1.25rem;
+    letter-spacing: 0.5px;
+}
+
+.nav-link {
+    font-size: 0.95rem;
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+}
+
+.nav-link:hover {
+    background: rgba(255,255,255,0.15);
+    border-radius: 6px;
+}
+
+footer {
+    border-top: 1px solid #e5e7eb;
+    margin-top: 30px;
+}
+
+.container {
+    min-height: 70vh;
+}
+
+/* Cards */
+.gt-card {
+    border-radius: 18px;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    padding: 1.25rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+}
+
+/* Smooth hover */
+.gt-card:hover {
+    transform: translateY(-2px);
+    transition: 0.15s ease;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.07);
+}
+

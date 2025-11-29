@@ -1,0 +1,26 @@
+@model GrapheneTrace.Model.Patient
+
+<div class="gt-page">
+    <div class="container py-3">
+        <div class="mb-3">
+            <a href="@Url.Action("Dashboard", "Clinician")" class="small text-muted">
+                <i class="bi bi-arrow-left"></i> Back to Dashboard
+            </a>
+        </div>
+
+        <h3>@Model.FullName</h3>
+        <div class="text-muted mb-3">Patient Overview</div>
+
+        <div class="gt-card mb-3">
+            <strong>Age:</strong> @Model.Age<br />
+            <strong>Gender:</strong> @Model.Gender<br />
+            <strong>Contact:</strong> @Model.ContactNumber<br />
+            <strong>Risk Level:</strong> @Model.RiskLevel<br />
+            <strong>Status:</strong> @Model.CurrentStatus<br />
+        </div>
+
+        <a class="btn btn-primary" href="@Url.Action("Heatmap", "Clinician", new { patientId = Model.PatientId })">
+            View Past Heatmap
+        </a>
+    </div>
+</div>

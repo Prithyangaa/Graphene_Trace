@@ -1,0 +1,97 @@
+@model GrapheneTrace.Model.ClinicianAppointmentsViewModel
+
+<div class="gt-page">
+    <div class="container py-3">
+
+        <div class="mb-3">
+            <a href="@Url.Action("Dashboard", "Clinician")" class="small text-muted">
+                <i class="bi bi-arrow-left"></i> Back
+            </a>
+        </div>
+
+        <h4 class="mb-3">Appointments</h4>
+
+        <!-- TODAY -->
+        <div class="gt-card mb-4">
+            <div class="gt-card-header">
+                <span>Today's Appointments</span>
+            </div>
+
+            @if (!Model.TodayAppointments.Any())
+            {
+                <div class="small text-muted">No appointments today</div>
+            }
+            else
+            {
+                foreach (var a in Model.TodayAppointments)
+                {
+                    <div class="mb-3 p-2 border-bottom">
+                        <div class="fw-semibold">
+                            @a.AppointmentTime.ToLocalTime().ToString("HH:mm")
+                        </div>
+                        <div class="small text-muted">@a.Patient?.FullName</div>
+                        <div class="small">@a.Notes</div>
+                    </div>
+                }
+            }
+        </div>
+
+        <!-- UPCOMING -->
+        <div class="gt-card mb-4">
+            <div class="gt-card-header">
+                <span>Upcoming Appointments</span>
+            </div>
+
+            @if (!Model.UpcomingAppointments.Any())
+            {
+                <div class="small text-muted">No upcoming appointments</div>
+            }
+            else
+            {
+                foreach (var a in Model.UpcomingAppointments)
+                {
+                    <div class="mb-3 p-2 border-bottom">
+                        <div class="fw-semibold">
+                            @a.AppointmentTime.ToLocalTime().ToString("MMM dd, HH:mm")
+                        </div>
+                        <div class="small text-muted">@a.Patient?.FullName</div>
+                        <div class="small">@a.Notes</div>
+                    </div>
+                }
+            }
+        </div>
+
+        <!-- CREATE APPOINTMENT -->
+        <div class="gt-card">
+            <div class="gt-card-header">
+                <span>Schedule New Appointment</span>
+            </div>
+
+            <form method="post" action="@Url.Action("CreateAppointment")">
+
+                <div class="mb-3">
+                    <label class="form-label">Patient</label>
+                    <select name="patientId" class="form-select">
+                        @foreach (var p in Model.AssignedPatients)
+                        {
+                            <option value="@p.PatientId">@p.FullName</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Appointment Time</label>
+                    <input class="form-control" type="datetime-local" name="appointmentTime" required />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Notes</label>
+                    <textarea class="form-control" name="notes"></textarea>
+                </div>
+
+                <button class="btn btn-primary">Create Appointment</button>
+
+            </form>
+        </div>
+    </div>
+</div>

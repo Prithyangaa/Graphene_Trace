@@ -1,89 +1,126 @@
 @{
-    ViewData["Title"] = "Heatmap Viewer";
+    ViewData["Title"] = "Live Heat Map";
 }
 
-<h2>@ViewData["Title"]</h2>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
 
-<div class="mb-3">
-    <input type="text" id="fileName" placeholder="Enter CSV filename (e.g. sample.csv)" class="form-control w-50 d-inline-block" />
-    <button id="loadBtn" class="btn btn-primary ms-2">Load</button>
+<div class="gt-page">
+    <div class="container py-3">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h4 class="mb-0">Live Heat Map</h4>
+            <a href="@Url.Action("Dashboard","Patient")" class="btn btn-outline-secondary btn-sm">
+                <i class="bi bi-arrow-left"></i> Back to Dashboard
+            </a>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-lg-8">
+                <div class="gt-card" style="cursor:default;">
+                    <div class="gt-card-header">
+                        <span>Real-Time Pressure Monitoring</span>
+                        <span class="gt-badge-live">
+                            <i class="bi bi-circle-fill" style="font-size:.45rem;"></i> Live
+                        </span>
+                    </div>
+                    <div class="gt-heatmap-preview" style="height:340px;">
+                        <canvas id="liveHeatmapCanvas" width="320" height="320"
+                                style="border-radius:16px; max-width:100%;"></canvas>
+                        <small class="mt-2 text-muted">Real-time pressure distribution across e-textile mat</small>
+                    </div>
+                    <div class="mt-2 small text-muted">
+                        Note: this prototype plays frames from the latest CSV file connected to your account.
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="gt-card mb-3" style="cursor:default;">
+                    <div class="gt-card-header">
+                        <span>Current Metrics</span>
+                    </div>
+                    <div class="mb-2">
+                        <div class="gt-stat-label">Peak Pressure Index</div>
+                        <div class="gt-stat-value">85 <span class="text-muted">mmHg</span></div>
+                        <div class="gt-pill-normal mt-1">Normal Range</div>
+                    </div>
+                    <div class="mb-2">
+                        <div class="gt-stat-label">Contact Area %</div>
+                        <div class="gt-stat-value">72%</div>
+                        <div class="progress mt-1" style="height:4px;">
+                            <div class="progress-bar" style="width:72%;"></div>
+                        </div>
+                    </div>
+                    <div class="mb-2">
+                        <div class="gt-stat-label">Average Pressure</div>
+                        <div class="gt-stat-value">42 <span class="text-muted">mmHg</span></div>
+                    </div>
+                    <div>
+                        <div class="gt-stat-label">Status</div>
+                        <div class="gt-pill-normal mt-1">Normal</div>
+                    </div>
+                </div>
+
+                <div class="gt-card" style="cursor:default;">
+                    <div class="gt-card-header">
+                        <span>Recent Activity</span>
+                    </div>
+                    <ul class="list-unstyled small mb-0">
+                        <li class="mb-1">• Pressure redistributed – <span class="text-muted">2 mins ago</span></li>
+                        <li class="mb-1">• Patient repositioned – <span class="text-muted">15 mins ago</span></li>
+                        <li>• Alert threshold adjusted – <span class="text-muted">1 hour ago</span></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
-
-<div id="heatmapContainer" class="mt-4"></div>
 
 @section Scripts {
 <script>
-document.getElementById("loadBtn").addEventListener("click", async () => {
-    const fileName = document.getElementById("fileName").value.trim();
-    const container = document.getElementById("heatmapContainer");
-    container.innerHTML = "";
+    // Simple auto-playing animation using CSV frames
+    const csvUrl = '@ViewBag.CsvUrl';
+    const canvas = document.getElementById('liveHeatmapCanvas');
+    if (canvas && csvUrl) {
+        const ctx = canvas.getContext('2d');
+        const size = 32;
 
-    if (!fileName) {
-        alert("Please enter a CSV filename.");
-        return;
+        fetch(csvUrl)
+            .then(r => r.text())
+            .then(text => {
+                const lines = text.trim().split(/\r?\n/);
+                const frames = [];
+                for (let i = 0; i + size <= lines.length; i += size) {
+                    const frame = [];
+                    for (let r = 0; r < size; r++) {
+                        const rowVals = lines[i + r].split(',').map(Number);
+                        frame.push(rowVals.slice(0, size));
+                    }
+                    frames.push(frame);
+                }
+
+                if (!frames.length) return;
+
+                let index = 0;
+                function drawFrame() {
+                    const frame = frames[index];
+                    const w = canvas.width / size;
+                    const h = canvas.height / size;
+                    let max = 0;
+                    frame.forEach(row => row.forEach(v => { if (v > max) max = v; }));
+                    for (let y = 0; y < size; y++) {
+                        for (let x = 0; x < size; x++) {
+                            const v = frame[y][x] / (max || 1);
+                            const r = Math.floor(255 * v);
+                            const g = Math.floor(255 * (1 - v));
+                            ctx.fillStyle = `rgb(${r},${g},180)`;
+                            ctx.fillRect(x * w, y * h, w, h);
+                        }
+                    }
+                    index = (index + 1) % frames.length;
+                }
+                drawFrame();
+                setInterval(drawFrame, 300);
+            });
     }
-
-    try {
-        const response = await fetch(`/heatmap/data/${fileName}`);
-        if (!response.ok) {
-            const error = await response.json();
-            alert("Error: " + error.error);
-            return;
-        }
-
-        const data = await response.json();
-        renderHeatmap(data);
-    } catch (err) {
-        alert("Failed to load data: " + err.message);
-    }
-});
-
-function renderHeatmap(data) {
-    const container = document.getElementById("heatmapContainer");
-    container.innerHTML = "";
-
-    // ✅ Create a proper grid layout based on CSV dimensions
-    const rows = data.length;
-    const cols = data[0].length;
-    const cellSize = 20; // px per cell
-
-    container.style.display = "grid";
-    container.style.gridTemplateColumns = `repeat(${cols}, ${cellSize}px)`;
-    container.style.gridTemplateRows = `repeat(${rows}, ${cellSize}px)`;
-    container.style.gap = "1px";
-    container.style.background = "#ccc";
-    container.style.width = `${cols * (cellSize + 1)}px`;
-    container.style.border = "1px solid #aaa";
-
-    // Find min and max for scaling
-    const flat = data.flat();
-    const minVal = Math.min(...flat);
-    const maxVal = Math.max(...flat);
-
-    // ✅ Generate cells for heatmap
-    for (let r = 0; r < rows; r++) {
-        for (let c = 0; c < cols; c++) {
-            const value = data[r][c];
-            const normalized = (value - minVal) / (maxVal - minVal || 1);
-            const color = getHeatColor(normalized);
-
-            const cell = document.createElement("div");
-            cell.style.width = `${cellSize}px`;
-            cell.style.height = `${cellSize}px`;
-            cell.style.backgroundColor = color;
-            cell.title = value.toFixed(1); // hover tooltip
-            container.appendChild(cell);
-        }
-    }
-}
-
-// ✅ Converts a 0–1 normalized value to a color (blue → red)
-function getHeatColor(value) {
-    const r = Math.floor(255 * value);
-    const g = Math.floor(255 * (1 - value));
-    const b = Math.floor(150 * (1 - value));
-    return `rgb(${r}, ${g}, ${b})`;
-}
 </script>
 }
-

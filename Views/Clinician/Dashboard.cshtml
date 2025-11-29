@@ -1,125 +1,393 @@
+@model GrapheneTrace.Model.ClinicianDashboardViewModel
+
 @{
     ViewData["Title"] = "Clinician Dashboard";
 }
 
-<!-- ===== Top Navigation Bar ===== -->
-<header style="display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; border-bottom: 1px solid #ccc;">
-    <div style="display: flex; align-items: center; gap: 10px;">
-        <h3 style="margin: 0;">Graphene Trace</h3>
-        <span style="font-size: 1.2rem; color: gray;">Clinician Dashboard</span>
-    </div>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
 
-    <div style="display: flex; gap: 20px; align-items: center;">
-        <i class="bi bi-bell" style="font-size: 1.5rem; cursor: pointer;"></i>
-        <i class="bi bi-person" style="font-size: 1.5rem; cursor: pointer;"></i>
-        <i class="bi bi-box-arrow-right" style="font-size: 1.5rem; cursor: pointer;"></i>
-    </div>
-</header>
+<style>
+    .gt-page {
+        background: #f5f7fb;
+        min-height: 100vh;
+        padding: 1.5rem 0 3rem;
+    }
 
-<!-- ===== Search Bar ===== -->
-<div class="p-3 border-bottom bg-light">
-    <input type="text" class="form-control" placeholder="🔍 Browse Patient - Search by name or ID..." />
+    .gt-card {
+        background: #ffffff;
+        border-radius: 18px;
+        border: 1px solid #e3e7f0;
+        padding: 1.25rem;
+        box-shadow: 0 8px 20px rgba(15, 23, 42, .03);
+        transition: transform .15s ease, box-shadow .15s ease;
+        cursor: pointer;
+    }
+
+    .gt-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 26px rgba(15, 23, 42, .08);
+    }
+
+    .gt-card-header {
+        font-size: .9rem;
+        font-weight: 600;
+        color: #64748b;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: .75rem;
+    }
+
+    .gt-link-sm {
+        font-size: .8rem;
+        color: #6366f1;
+    }
+
+    /* Priority strip */
+
+    .gt-priority-strip-wrapper {
+        position: relative;
+        margin-bottom: .5rem;
+    }
+
+    .gt-priority-strip {
+        display: flex;
+        overflow-x: auto;
+        gap: 1rem;
+        padding-bottom: .5rem;
+    }
+
+    .gt-patient-tile {
+        min-width: 260px;
+        max-width: 260px;
+        border-radius: 18px;
+        padding: 1rem;
+        position: relative;
+        box-shadow: 0 8px 20px rgba(15, 23, 42, .04);
+        transition: transform .15s ease, box-shadow .15s ease;
+        cursor: pointer;
+    }
+
+    .gt-patient-tile:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 26px rgba(15, 23, 42, .1);
+    }
+
+    .gt-priority-badge {
+        font-size: .7rem;
+        text-transform: uppercase;
+        letter-spacing: .06em;
+        padding: .2rem .55rem;
+        border-radius: 999px;
+        font-weight: 600;
+    }
+
+    .gt-priority-critical {
+        background: linear-gradient(135deg, #991b1b, #b91c1c);
+        color: #fee2e2;
+    }
+
+    .gt-priority-critical .gt-priority-badge {
+        background: #fee2e2;
+        color: #b91c1c;
+    }
+
+    .gt-priority-high {
+        background: linear-gradient(135deg, #7c2d12, #ea580c);
+        color: #fffbeb;
+    }
+
+    .gt-priority-high .gt-priority-badge {
+        background: #ffedd5;
+        color: #9a3412;
+    }
+
+    .gt-priority-medium {
+        background: #fef9c3;
+        color: #78350f;
+        border: 1px solid #fef3c7;
+    }
+
+    .gt-priority-medium .gt-priority-badge {
+        background: #fef3c7;
+        color: #854d0e;
+    }
+
+    .gt-priority-stable {
+        background: #ecfdf3;
+        color: #166534;
+        border: 1px solid #bbf7d0;
+    }
+
+    .gt-priority-stable .gt-priority-badge {
+        background: #dcfce7;
+        color: #166534;
+    }
+
+    .gt-patient-name {
+        font-weight: 600;
+        font-size: 1rem;
+    }
+
+    .gt-patient-meta {
+        font-size: .8rem;
+        color: #e5e7eb;
+    }
+
+    .gt-patient-meta-dark {
+        font-size: .8rem;
+        color: #64748b;
+    }
+
+    .gt-patient-metric {
+        font-size: .8rem;
+    }
+
+    .gt-tile-close {
+        position: absolute;
+        top: .6rem;
+        right: .6rem;
+        font-size: .9rem;
+        opacity: .6;
+    }
+
+    .gt-tile-close:hover {
+        opacity: 1;
+    }
+
+    .gt-stat-label {
+        font-size: .78rem;
+        text-transform: uppercase;
+        letter-spacing: .06em;
+        color: #94a3b8;
+    }
+
+    .gt-stat-value {
+        font-size: 1rem;
+        font-weight: 600;
+        color: #0f172a;
+    }
+</style>
+
+<div class="gt-page">
+    <div class="container">
+
+        <!-- Top bar -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <div class="text-muted small">Graphene Trace</div>
+                <h3 class="mt-1 mb-0">Clinician Dashboard</h3>
+                <div class="text-muted small">
+                    @Model.Speciality
+                </div>
+            </div>
+            <div class="d-flex align-items-center gap-3">
+                <div class="text-end me-3 small text-muted">
+                    Logged in as <strong>@Model.FullName</strong><br />
+                    @Model.Email
+                </div>
+                <a href="@Url.Action("Logout", "Auth")" class="btn btn-outline-secondary btn-sm">
+                    <i class="bi bi-box-arrow-right me-1"></i> Logout
+                </a>
+            </div>
+        </div>
+
+        <!-- Priority patient map -->
+        <div class="mb-4">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <div class="text-muted small">
+                    Priority Patient Map
+                </div>
+                <div class="small text-muted">
+                    <i class="bi bi-exclamation-triangle me-1"></i>
+                    @Model.PatientsRequiringAttention patients requiring attention
+                </div>
+            </div>
+
+            <div class="gt-priority-strip-wrapper">
+                <div class="gt-priority-strip">
+                    @if (Model.PriorityPatients.Any())
+                    {
+                        foreach (var p in Model.PriorityPatients)
+                        {
+                            var ageText = p.Age.HasValue ? $"Age {p.Age.Value}" : "Age N/A";
+                            <div class="gt-patient-tile @p.PriorityCssClass"
+                                onclick="location.href='@Url.Action("PatientOverview", "Clinician", new { id = p.PatientId })'">
+
+                                <div class="gt-tile-close" onclick="event.stopPropagation();">
+                                    <i class="bi bi-x-lg"></i>
+                                </div>
+
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="gt-priority-badge">@p.PriorityLabel</span>
+                                    <span class="gt-patient-meta">
+                                        #PT-@p.PatientId.ToString("D4")
+                                    </span>
+                                </div>
+
+                                <div class="gt-patient-name mb-1">
+                                    @p.PatientName
+                                </div>
+                                <div class="gt-patient-meta mb-2">
+                                    @ageText • @p.RiskLevel ?? "Risk N/A"
+                                </div>
+
+                                <div class="gt-patient-metric mb-1">
+                                    <strong>@p.SummaryMessage</strong>
+                                </div>
+
+                                <div class="d-flex justify-content-between mt-2 small">
+                                    <div>
+                                        <div class="gt-patient-meta-dark">Pressure Index</div>
+                                        <div class="fw-semibold">@p.PressureIndex.ToString("0") mmHg</div>
+                                    </div>
+                                    <div>
+                                        <div class="gt-patient-meta-dark">Hotspots</div>
+                                        <div class="fw-semibold">@p.HotspotCount</div>
+                                    </div>
+                                    <div>
+                                        <div class="gt-patient-meta-dark">Last Reading</div>
+                                        <div class="fw-semibold">@p.LastReadingDisplay</div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="text-muted small">
+                            No patients assigned yet.
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <div class="small text-muted">
+                &larr; Most urgent &nbsp;&nbsp;|&nbsp;&nbsp; Least urgent &rarr;
+                &nbsp; • Click a tile to open patient overview.
+            </div>
+        </div>
+
+        <!-- Lower tiles -->
+        <div class="row g-4">
+            <!-- Messages -->
+            <div class="col-lg-3 col-md-6">
+                <div class="gt-card"
+                    onclick="location.href='@Url.Action("Messages", "Clinician", new { patientId = Model.RecentMessages.FirstOrDefault()?.PatientId })'">
+
+                    <div class="gt-card-header">
+                        <span>Messages</span>
+                        <span class="gt-link-sm">Open</span>
+                    </div>
+
+                    <div class="gt-stat-label mb-1">Recent</div>
+
+                    @if (Model.RecentMessages != null && Model.RecentMessages.Any())
+                    {
+                        var last = Model.RecentMessages.First();
+                        var sender = last.FromClinician ? "You" : "Patient";
+                        var patient = Model.PriorityPatients.FirstOrDefault(p => p.PatientId == last.PatientId);
+
+                        <div class="small mb-1">
+                            <strong>@sender</strong>
+                            @if (patient != null)
+                            {
+                                <span>· @patient.PatientName</span>
+                            }
+                            <span> · @last.CreatedAt.ToLocalTime().ToString("HH:mm")</span>
+                        </div>
+
+                        <div class="small text-muted text-truncate">
+                            @last.Content
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="small text-muted">
+                            No recent messages.
+                        </div>
+                    }
+                </div>
+            </div>
+
+
+            <!-- Appointments -->
+            <div class="col-lg-3 col-md-6">
+                <div class="gt-card" onclick="location.href='@Url.Action("Appointments", "Clinician")'">
+                    <div class="gt-card-header">
+                        <span>Appointments</span>
+                        <span class="gt-link-sm">View</span>
+                    </div>
+
+                    <div class="gt-stat-label mb-1">Today</div>
+
+                    @if (Model.TodayAppointmentsCount > 0)
+                    {
+                        <div class="gt-stat-value">@Model.TodayAppointmentsCount</div>
+                        <div class="small text-muted">Scheduled for today</div>
+                    }
+                    else
+                    {
+                        <div class="small text-muted">No appointments today</div>
+                    }
+                </div>
+            </div>
+
+
+            <!-- Patient list -->
+            <div class="col-lg-3 col-md-6">
+                <div class="gt-card" onclick="location.href='@Url.Action("PatientList", "Clinician")'">
+                    <div class="gt-card-header">
+                        <span>Patient List</span>
+                        <span class="gt-link-sm">All patients</span>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="gt-stat-label">Total Active</div>
+                            <div class="gt-stat-value">@Model.TotalPatients</div>
+                            <div class="small text-muted">All assigned patients</div>
+                        </div>
+                        <div class="col-6">
+                            <div class="gt-stat-label">Stable</div>
+                            <div class="gt-stat-value">
+                                @Model.PriorityPatients.Count(p => p.Priority == "STABLE")
+                            </div>
+                            <div class="small text-muted">Normal readings</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Settings -->
+            <div class="col-lg-3 col-md-6">
+                <div class="gt-card" onclick="location.href='@Url.Action("Settings", "Clinician")'">
+                    <div class="gt-card-header">
+                        <span>Settings</span>
+                        <span class="gt-link-sm">Open</span>
+                    </div>
+
+                    <ul class="list-unstyled mb-0 small">
+                        <li class="d-flex justify-content-between align-items-center py-1">
+                            <span><i class="bi bi-bell me-2"></i>Alert Thresholds</span>
+                            <i class="bi bi-chevron-right text-muted"></i>
+                        </li>
+                        <li class="d-flex justify-content-between align-items-center py-1">
+                            <span><i class="bi bi-sliders me-2"></i>Preferences</span>
+                            <i class="bi bi-chevron-right text-muted"></i>
+                        </li>
+                        <li class="d-flex justify-content-between align-items-center py-1">
+                            <span><i class="bi bi-person-circle me-2"></i>Account</span>
+                            <i class="bi bi-chevron-right text-muted"></i>
+                        </li>
+                    </ul>
+
+                    <hr class="my-2" />
+                    <div class="gt-stat-label mb-1">Active Alerts</div>
+                    <div class="gt-stat-value">@Model.ActiveAlerts</div>
+                </div>
+            </div>
+        </div>
+
+    </div>
 </div>
-
-<!-- ===== Priority Patient Map ===== -->
-<div class="container mt-4">
-    <div class="d-flex justify-content-between align-items-center mb-2">
-        <h5>Priority Patient Map</h5>
-        <small class="text-muted">⚠️ 6 patients requiring attention</small>
-    </div>
-
-    <div class="d-flex overflow-auto gap-3 pb-3">
-        <!-- Critical -->
-        <div class="card text-white bg-dark p-3" style="min-width: 250px;">
-            <span class="badge bg-danger mb-2">CRITICAL</span>
-            <h6>Robert Johnson</h6>
-            <small>PT-1047 • Age: 45</small>
-            <p class="mt-2 mb-1">Sustained high pressure - sacral region</p>
-            <small>Pressure Index: 187 mmHg<br>Last Reading: 2 min ago</small>
-        </div>
-
-        <!-- High -->
-        <div class="card text-white bg-secondary p-3" style="min-width: 250px;">
-            <span class="badge bg-warning text-dark mb-2">HIGH</span>
-            <h6>John Doe</h6>
-            <small>PT-1024 • Age: 52</small>
-            <p class="mt-2 mb-1">Extended contact time - 90 mins</p>
-            <small>Pressure Index: 145 mmHg<br>Last Reading: 10 min ago</small>
-        </div>
-
-        <!-- High -->
-        <div class="card text-white bg-secondary p-3" style="min-width: 250px;">
-            <span class="badge bg-warning text-dark mb-2">HIGH</span>
-            <h6>James Brown</h6>
-            <small>PT-1049 • Age: 71</small>
-            <p class="mt-2 mb-1">Pressure spike detected</p>
-            <small>Pressure Index: 138 mmHg<br>Last Reading: 15 min ago</small>
-        </div>
-
-        <!-- Medium -->
-        <div class="card text-white bg-secondary p-3" style="min-width: 250px;">
-            <span class="badge bg-info text-dark mb-2">MEDIUM</span>
-            <h6>Michael Davis</h6>
-            <small>PT-1025 • Age: 58</small>
-            <p class="mt-2 mb-1">Position change overdue</p>
-            <small>Pressure Index: 112 mmHg<br>Last Reading: 25 min ago</small>
-        </div>
-    </div>
-
-    <small class="text-muted">← Most Urgent | Least Urgent →</small>
-</div>
-
-<!-- ===== Lower Cards ===== -->
-<div class="container mt-4 mb-5">
-    <div class="row g-3">
-        <!-- Messages -->
-        <div class="col-md-3">
-            <div class="card p-3 shadow-sm">
-                <h6>Messages</h6>
-                <p>3 unread<br><span class="text-primary">Patient communications</span></p>
-                <small>Last: John Doe — 1 hour ago</small><br>
-                <a href="#" class="text-primary small">View all →</a>
-            </div>
-        </div>
-
-        <!-- Appointments -->
-        <div class="col-md-3">
-            <div class="card p-3 shadow-sm">
-                <h6>Appointments</h6>
-                <p>Today: 5 scheduled<br>Next: 2:00 PM</p>
-                <small>Upcoming: 12 this week</small><br>
-                <a href="#" class="text-primary small">View calendar →</a>
-            </div>
-        </div>
-
-        <!-- Patient List -->
-        <div class="col-md-3">
-            <div class="card p-3 shadow-sm">
-                <h6>Patient List</h6>
-                <p>Total Active: 24<br>Stable: 18</p>
-                <small>Normal readings</small><br>
-                <a href="#" class="text-primary small">View all →</a>
-            </div>
-        </div>
-
-        <!-- Settings -->
-        <div class="col-md-3">
-            <div class="card p-3 shadow-sm">
-                <h6>Settings</h6>
-                <ul class="list-unstyled small mb-0">
-                    <li>• Alert Thresholds</li>
-                    <li>• Preferences</li>
-                    <li>• Account</li>
-                </ul>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- ===== Footer ===== -->
-<footer class="text-center text-muted small py-3 border-top">
-    Graphene Trace © 2025 | Sensore System Prototype
-</footer>
-
-<!-- Bootstrap Icons (for bell, profile, logout) -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">

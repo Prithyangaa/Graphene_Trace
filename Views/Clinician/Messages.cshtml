@@ -1,0 +1,88 @@
+@model GrapheneTrace.Model.ClinicianMessagesViewModel
+
+<div class="gt-page">
+    <div class="container py-3">
+
+        <div class="mb-3">
+            <a href="@Url.Action("Dashboard", "Clinician")" class="small text-muted">
+                <i class="bi bi-arrow-left"></i> Back to Dashboard
+            </a>
+        </div>
+
+        <h4 class="mb-3">Messages</h4>
+
+        <div class="row">
+            <!-- LEFT SIDEBAR: PATIENT LIST -->
+            <div class="col-4">
+                <div class="gt-card" style="height:480px; overflow-y:auto;">
+                    <div class="fw-semibold mb-2">Patients</div>
+
+                    <input class="form-control form-control-sm mb-3" placeholder="Search..." />
+
+                    @foreach (var p in Model.AssignedPatients)
+                    {
+                        <a class="d-block p-2 rounded mb-1 @(Model.SelectedPatientId == p.PatientId ? "bg-light" : "")"
+                            style="cursor:pointer; text-decoration:none;"
+                            href="@Url.Action("Messages", "Clinician", new { patientId = p.PatientId })">
+                            <div class="fw-semibold">@p.FullName</div>
+                            <div class="small text-muted">PT-@p.PatientId.ToString("D4")</div>
+                        </a>
+                    }
+                </div>
+            </div>
+
+            <!-- RIGHT PANEL: MESSAGE THREAD -->
+            <div class="col-8">
+                @if (Model.SelectedPatientId == null)
+                {
+                    <div class="gt-card text-center p-5">
+                        <div class="text-muted">Select a patient to view messages</div>
+                    </div>
+                }
+                else
+                {
+                    <div class="gt-card" style="height:480px; display:flex; flex-direction:column;">
+                        <div class="fw-semibold mb-2">
+                            Conversation with @Model.SelectedPatientName
+                        </div>
+
+                        <!-- Thread -->
+                        <div style="flex:1; overflow-y:auto; padding-right:6px;">
+
+                            @foreach (var msg in Model.Thread)
+                            {
+                                bool isClinician = msg.FromClinician;
+
+                                <div class="mb-3 @(isClinician ? "text-end" : "")">
+                                    <div class="small @(isClinician ? "text-primary" : "text-muted")">
+                                        @(isClinician ? "You" : "Patient")
+                                        · @msg.CreatedAt.ToLocalTime().ToString("HH:mm")
+                                    </div>
+
+                                    <div class="p-2 rounded-3 d-inline-block"
+                                        style="background:@(isClinician ? "#e0e7ff" : "#f1f5f9"); max-width:85%;">
+                                        @msg.Content
+                                    </div>
+                                </div>
+                            }
+
+                        </div>
+
+                        <!-- SEND MESSAGE FORM -->
+                        <form class="mt-3" method="post" action="@Url.Action("SendMessageToPatient", "Clinician")">
+                            <input type="hidden" name="patientId" value="@Model.SelectedPatientId" />
+                            <div class="input-group">
+                                <input name="content" class="form-control" placeholder="Type a message..."
+                                    autocomplete="off" />
+                                <button class="btn btn-primary">
+                                    <i class="bi bi-send"></i>
+                                </button>
+                            </div>
+                        </form>
+
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
