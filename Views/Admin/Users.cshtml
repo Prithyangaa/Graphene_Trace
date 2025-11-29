@@ -1,0 +1,27 @@
+@model List<GrapheneTrace.Model.User>
+
+<h3>User Management</h3>
+
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>User ID</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Role</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach (var u in Model)
+        {
+            <tr>
+                <td>@u.UserId</td>
+                <td>@u.FullName</td>
+                <td>@u.Email</td>
+                <td>@u.Role.RoleName</td>
+            </tr>
+        }
+    </tbody>
+</table>
+

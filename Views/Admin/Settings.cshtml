@@ -1,0 +1,124 @@
+@model GrapheneTrace.Model.SettingsViewModel
+
+@{
+    ViewData["Title"] = "Settings";
+}
+
+<link rel="stylesheet" 
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+
+<style>
+    .gt-card {
+        background: #ffffff;
+        border-radius: 18px;
+        padding: 1.5rem;
+        border: 1px solid #e3e7f0;
+        box-shadow: 0 6px 18px rgba(0,0,0,0.05);
+        transition: .2s;
+    }
+    .gt-card:hover {
+        transform: translateY(-2px);
+    }
+    .gt-section-title {
+        font-size: .85rem;
+        font-weight: 700;
+        color: #64748b;
+        letter-spacing: .06em;
+        text-transform: uppercase;
+    }
+    .gt-value {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #1e293b;
+    }
+    .gt-label {
+        color: #64748b;
+        font-size: .8rem;
+        margin-bottom: .2rem;
+    }
+    .gt-btn {
+        border: 1px solid #cbd5e1;
+        padding: .4rem .9rem;
+        border-radius: 10px;
+        font-size: .85rem;
+        font-weight: 500;
+        background: #fff;
+    }
+</style>
+
+<div class="container mt-4">
+
+    <h3 class="mb-3">Settings</h3>
+
+    <div class="row g-4">
+
+        <!-- System Configuration -->
+        <div class="col-lg-4 col-md-6">
+            <div class="gt-card">
+                <div class="gt-section-title mb-3">System Configuration</div>
+
+                <div class="gt-label">System Status</div>
+                <div class="gt-value">@Model.SystemStatus</div>
+
+                <div class="gt-label mt-3">Total Users</div>
+                <div class="gt-value">@Model.TotalUsers</div>
+
+                <div class="gt-label mt-3">Total Patients</div>
+                <div class="gt-value">@Model.TotalPatients</div>
+
+                <button class="gt-btn mt-4 w-100"
+                        onclick="location.href='/Admin/SystemOverview'">
+                    <i class="bi bi-gear me-1"></i> Open
+                </button>
+            </div>
+        </div>
+
+        <!-- Security -->
+        <div class="col-lg-4 col-md-6">
+            <div class="gt-card">
+                <div class="gt-section-title mb-3">Security</div>
+
+                <div class="gt-label">Failed Login Attempts</div>
+                <div class="gt-value">@Model.FailedLoginAttempts</div>
+
+                <div class="gt-label mt-3">Last Password Change</div>
+                <div class="gt-value">
+                    @(Model.LastPasswordChange?.ToLocalTime().ToString("dd MMM yyyy HH:mm") ?? "Never")
+                </div>
+
+                <button class="gt-btn mt-4 w-100"
+                        onclick="location.href='/Admin/Users'">
+                    <i class="bi bi-shield-check me-1"></i> Open
+                </button>
+            </div>
+        </div>
+
+        <!-- Backup & Restore -->
+        <div class="col-lg-4 col-md-6">
+            <div class="gt-card">
+                <div class="gt-section-title mb-3">Backup & Restore</div>
+
+                <div class="gt-label">Last Backup</div>
+                <div class="gt-value">
+                    @Model.LastBackup.ToLocalTime().ToString("dd MMM yyyy HH:mm")
+                </div>
+
+                <div class="gt-label mt-3">Auto Backup</div>
+                <div class="gt-value">
+                    @(Model.AutoBackupEnabled ? "Enabled" : "Disabled")
+                </div>
+
+                <div class="gt-label mt-3">Backup Frequency</div>
+                <div class="gt-value">@Model.BackupFrequency</div>
+
+                <button class="gt-btn mt-4 w-100"
+                        onclick="location.href='/Admin/BackupRestore'">
+                    <i class="bi bi-cloud-arrow-up me-1"></i> Open
+                </button>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+

@@ -1,0 +1,37 @@
+@model List<GrapheneTrace.Model.Patient>
+
+<div class="gt-page">
+    <div class="container py-3">
+
+        <div class="mb-3">
+            <a href="@Url.Action("Dashboard", "Clinician")" class="small text-muted">
+                <i class="bi bi-arrow-left"></i> Back to Dashboard
+            </a>
+        </div>
+
+        <h4>Patient List & Status</h4>
+
+        @foreach (var p in Model)
+        {
+            <div class="gt-card mb-3 d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="fw-semibold">@p.FullName</div>
+                    <div class="small text-muted">PT-@p.PatientId.ToString("D4")</div>
+                    <div class="small">Age: @p.Age</div>
+                    <div class="small">Risk: @p.RiskLevel</div>
+                    <div class="small">Status: @p.CurrentStatus</div>
+                </div>
+
+                <div>
+                    <a class="btn btn-outline-secondary btn-sm"
+                        href="@Url.Action("PatientOverview", "Clinician", new { id = p.PatientId })">
+                        View Details
+                    </a>
+                    <a class="btn btn-primary btn-sm" href="@Url.Action("Messages", "Clinician")">
+                        Message
+                    </a>
+                </div>
+            </div>
+        }
+    </div>
+</div>

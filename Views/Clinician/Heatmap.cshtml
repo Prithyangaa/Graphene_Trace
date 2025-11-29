@@ -1,0 +1,173 @@
+@model GrapheneTrace.Model.ClinicianHeatmapViewModel
+
+@{
+    ViewData["Title"] = "Patient Heatmap Viewer";
+}
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+
+<div class="gt-page">
+    <div class="container py-3">
+
+        <!-- Breadcrumbs -->
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+                <nav class="small text-muted mb-1">
+                    Dashboard /
+                    <a href="@Url.Action("PatientOverview", "Clinician", new { id = Model.PatientId })">Patient
+                        Overview</a> /
+                    <span class="text-body">Heatmap</span>
+                </nav>
+                <h4 class="mb-0">Heatmap Viewer — @Model.PatientName</h4>
+            </div>
+
+            <a class="btn btn-outline-secondary btn-sm"
+                href="@Url.Action("PatientOverview", "Clinician", new { id = Model.PatientId })">
+                <i class="bi bi-arrow-left"></i> Back
+            </a>
+        </div>
+
+        <!-- Time range selector + slider -->
+        <div class="gt-card mb-3" style="cursor:default;">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <div class="small">
+                    <strong>Time Range Selection</strong><br />
+                    <span class="text-muted">Viewing: <span id="viewingLabel">0 min ago</span></span>
+                </div>
+                <div>
+                    <select class="form-select form-select-sm">
+                        <option>Last 24 hours</option>
+                    </select>
+                </div>
+            </div>
+
+            <input id="frameSlider" type="range" class="form-range" min="0" max="@Model.TotalFrames"
+                value="@Model.TotalFrames" />
+        </div>
+
+        <div class="row g-4">
+            <!-- Heatmap Canvas -->
+            <div class="col-lg-8">
+                <div class="gt-card" style="cursor:default;">
+                    <div class="gt-card-header">
+                        <span>Historical Pressure Data</span>
+                    </div>
+
+                    <div class="gt-heatmap-preview" style="height:320px;">
+                        <canvas id="pastHeatmapCanvas" width="320" height="320"
+                            style="border-radius:16px; max-width:100%;">
+                        </canvas>
+                        <small class="mt-2 text-muted">
+                            Heatmap at <span id="snapshotLabel">0 min ago</span>
+                        </small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right column -->
+            <div class="col-lg-4">
+
+                <!-- Snapshots -->
+                <div class="gt-card mb-3" style="cursor:default;">
+                    <div class="gt-card-header">
+                        <span>Recent Snapshots</span>
+                    </div>
+                    <div id="snapshotList" class="small"></div>
+                </div>
+
+                <!-- Placeholder chart area -->
+                <div class="gt-card" style="cursor:default;">
+                    <div class="gt-card-header"><span>Pressure Over Time</span></div>
+                    <div class="text-muted small">
+                        (Coming soon) Line chart will appear here.
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        const csvUrl = '@Model.CsvUrl';
+        const slider = document.getElementById('frameSlider');
+        const canvas = document.getElementById('pastHeatmapCanvas');
+        const ctx = canvas.getContext('2d');
+        const viewingLabel = document.getElementById('viewingLabel');
+        const snapshotLabel = document.getElementById('snapshotLabel');
+        const snapshotList = document.getElementById('snapshotList');
+
+        const size = 32;
+        let frames = [];
+
+        function drawFrame(index) {
+            if (!frames.length) return;
+            index = Math.max(0, Math.min(index, frames.length - 1));
+
+            const frame = frames[index];
+            const w = canvas.width / size;
+            const h = canvas.height / size;
+
+            let max = 0;
+            frame.forEach(row => row.forEach(v => max = Math.max(v, max)));
+
+            for (let y = 0; y < size; y++) {
+                for (let x = 0; x < size; x++) {
+                    const v = frame[y][x] / (max || 1);
+                    const r = Math.floor(255 * v);
+                    const g = Math.floor(255 * (1 - v));
+                    ctx.fillStyle = `rgb(${r}, ${g}, 180)`;
+                    ctx.fillRect(x * w, y * h, w, h);
+                }
+            }
+
+            const minsAgo = (frames.length - 1 - index) * @Model.FrameIntervalMinutes;
+            viewingLabel.textContent = minsAgo + " min ago";
+            snapshotLabel.textContent = viewingLabel.textContent;
+        }
+
+        // Load CSV
+        fetch(csvUrl)
+            .then(r => r.text())
+            .then(text => {
+                const lines = text.trim().split(/\r?\n/);
+
+                for (let i = 0; i + size <= lines.length; i += size) {
+                    const frame = [];
+                    for (let r = 0; r < size; r++) {
+                        const rowVals = lines[i + r]
+                            .split(',')
+                            .map(Number)
+                            .slice(0, size);
+                        frame.push(rowVals);
+                    }
+                    frames.push(frame);
+                }
+
+                // Set slider max
+                slider.max = frames.length - 1;
+                slider.value = frames.length - 1;
+
+                // Generate recent snapshot list (last 6)
+                snapshotList.innerHTML = "";
+                const count = Math.min(6, frames.length);
+                for (let i = 0; i < count; i++) {
+                    const index = frames.length - 1 - i;
+                    const minsAgo = i * @Model.FrameIntervalMinutes;
+
+                    snapshotList.innerHTML += `
+                            <div class="mb-2 p-2 rounded-3" style="background:#f8fafc;">
+                                <div>${minsAgo} min ago</div>
+                                <div class="text-muted">Snapshot #${index}</div>
+                            </div>`;
+                }
+
+                drawFrame(slider.value);
+            });
+
+        // Slider interaction
+        slider.addEventListener('input', () => drawFrame(slider.value));
+    </script>
+}

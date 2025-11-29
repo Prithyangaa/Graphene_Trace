@@ -1,0 +1,82 @@
+.clinician-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.subtext {
+    color: #888;
+}
+
+.search-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #f7f7f7;
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 25px;
+}
+
+.priority-strip {
+    display: flex;
+    overflow-x: auto;
+    gap: 15px;
+    padding-bottom: 10px;
+}
+
+.priority-card {
+    min-width: 260px;
+    padding: 15px;
+    border-radius: 14px;
+    color: white;
+    position: relative;
+}
+
+.priority-card h5 {
+    margin-top: 10px;
+    margin-bottom: 5px;
+}
+
+.priority-card .metric {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 6px;
+}
+
+.priority-card .sub {
+    font-size: 0.9rem;
+    opacity: 0.8;
+}
+
+/* Color themes */
+.critical {
+    background: linear-gradient(135deg, #b71c1c, #ff5252);
+}
+
+.high {
+    background: linear-gradient(135deg, #e65100, #ff9800);
+}
+
+.medium {
+    background: linear-gradient(135deg, #fdd835, #ffeb3b);
+    color: #222;
+}
+
+.stable {
+    background: linear-gradient(135deg, #1b5e20, #4caf50);
+}
+
+.severity {
+    background: rgba(255,255,255,0.2);
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    display: inline-block;
+}
+
+.strip-hint {
+    color: #777;
+    margin-top: 10px;
+    font-size: 0.9rem;
+}

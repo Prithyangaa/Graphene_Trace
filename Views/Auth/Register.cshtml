@@ -1,0 +1,88 @@
+@model List<GrapheneTrace.Model.Role>
+
+@{
+    ViewData["Title"] = "Register";
+}
+
+<div class="login-container">
+    <div class="login-box">
+        <h2>Create Account</h2>
+
+        <form asp-action="Register" method="post">
+
+            <!-- USER BASE FIELDS -->
+            <label>Full Name</label>
+            <input name="FullName" class="input-box" required />
+
+            <label>Email</label>
+            <input name="Email" type="email" class="input-box" required />
+
+            <label>Password</label>
+            <input name="Password" type="password" class="input-box" required />
+
+            <!-- SELECT ROLE -->
+            <label>Role</label>
+            <select name="RoleId" id="roleSelect" class="input-box" required>
+                @foreach (var role in Model)
+                {
+                    <option value="@role.RoleId">@role.RoleName</option>
+                }
+            </select>
+
+
+            <!-- PATIENT FIELDS -->
+            <div id="patientFields" style="display:none; margin-top:15px;">
+                <h4>Patient Details</h4>
+
+                <label>Age</label>
+                <input name="Age" type="number" class="input-box" />
+
+                <label>Gender</label>
+                <input name="Gender" class="input-box" />
+
+                <label>Contact Number</label>
+                <input name="ContactNumber" class="input-box" />
+
+                <label>Risk Level</label>
+                <input name="RiskLevel" class="input-box" />
+
+                <label>Current Status</label>
+                <input name="CurrentStatus" class="input-box" />
+            </div>
+
+
+            <!-- CLINICIAN FIELDS -->
+            <div id="clinicianFields" style="display:none; margin-top:15px;">
+                <h4>Clinician Details</h4>
+
+                <label>Speciality</label>
+                <input name="Speciality" class="input-box" />
+
+                <label>Active?</label>
+                <select name="IsActive" class="input-box">
+                    <option value="true">Active</option>
+                    <option value="false">Inactive</option>
+                </select>
+            </div>
+
+            <!-- SUBMIT BUTTON -->
+            <button type="submit" class="btn mt-3">Register</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    const roleSelect = document.getElementById("roleSelect");
+    const patientFields = document.getElementById("patientFields");
+    const clinicianFields = document.getElementById("clinicianFields");
+
+    function updateFields() {
+        const selectedRole = roleSelect.options[roleSelect.selectedIndex].text;
+
+        patientFields.style.display = selectedRole === "Patient" ? "block" : "none";
+        clinicianFields.style.display = selectedRole === "Clinician" ? "block" : "none";
+    }
+
+    roleSelect.addEventListener("change", updateFields);
+    updateFields();
+</script>

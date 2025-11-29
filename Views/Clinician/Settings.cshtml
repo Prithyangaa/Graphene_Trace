@@ -1,0 +1,48 @@
+<div class="gt-page">
+    <div class="container py-3">
+
+        <div class="mb-3">
+            <a href="@Url.Action("Dashboard", "Clinician")" class="small text-muted">
+                <i class="bi bi-arrow-left"></i> Back
+            </a>
+        </div>
+
+        <h4>Clinician Settings</h4>
+
+        <div class="gt-card mb-4">
+            <div class="fw-semibold mb-2">Alert Thresholds</div>
+
+            <label>Pressure Threshold (mmHg)</label>
+            <input class="form-control mb-2" value="150" />
+
+            <label>Contact Duration (minutes)</label>
+            <input class="form-control mb-2" value="90" />
+        </div>
+
+        <div class="gt-card mb-4">
+            <div class="fw-semibold mb-2">Notification Preferences</div>
+            <div>Email Notifications</div>
+            <input type="checkbox" checked />
+        </div>
+
+        <div class="gt-card mb-4">
+            <div class="fw-semibold mb-2">Account Settings</div>
+
+            <label>Full Name</label>
+            <input class="form-control mb-2" />
+
+            <label>Email Address</label>
+            <input class="form-control mb-2" />
+
+            <label>Phone</label>
+            <input class="form-control mb-2" />
+
+            <label>Specialty</label>
+            <input class="form-control mb-2" />
+        </div>
+
+        <button class="btn btn-primary">Save Changes</button>
+        <button class="btn btn-secondary">Cancel</button>
+
+    </div>
+</div>

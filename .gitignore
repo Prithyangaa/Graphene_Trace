@@ -1,0 +1,21 @@
+# Build folders
+bin/
+obj/
+
+# Environment files
+.env
+
+# User-specific files
+*.user
+*.swp
+
+# Visual Studio / .NET
+.vs/
+*.db
+*.cache
+*.pdb
+
+# Auto-generated files
+*.dll
+*.exe
+*.json.cache
