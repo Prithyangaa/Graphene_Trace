@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -27,3 +28,17 @@ namespace GrapheneTrace.Model
     }
 }
 
+=======
+namespace GrapheneTrace.Model
+{
+    public class Notification
+    {
+        public int NotificationId { get; set; }
+        public int UserId { get; set; }
+        public int AlertId { get; set; }
+        public string? Message { get; set; }
+        public bool Delivered { get; set; }
+        public DateTime? DeliveredAt { get; set; }
+    }
+}
+>>>>>>> e90a0f6ed46d6e329231b29efb5338278c92ab88

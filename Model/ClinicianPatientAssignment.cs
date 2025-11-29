@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -26,3 +27,20 @@ namespace GrapheneTrace.Model
     }
 }
 
+=======
+namespace GrapheneTrace.Model
+{
+    public class ClinicianPatientAssignment
+    {
+        public int AssignmentId { get; set; }
+        public int PatientId { get; set; }
+        public Patient? Patient { get; set; }
+
+        public int ClinicianId { get; set; }
+        public Clinician Clinician { get; set; }
+
+        public bool IsPrimary { get; set; }
+        public DateTime AssignedAt { get; set; }
+    }
+}
+>>>>>>> e90a0f6ed46d6e329231b29efb5338278c92ab88

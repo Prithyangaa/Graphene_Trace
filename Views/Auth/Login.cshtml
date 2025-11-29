@@ -1,6 +1,7 @@
 @{
     ViewData["Title"] = "Sign in";
 }
+<<<<<<< HEAD
 
 <div class="row justify-content-center mt-5">
     <div class="col-md-5">
@@ -37,5 +38,27 @@
                 </form>
             </div>
         </div>
+=======
+
+<div class="login-container">
+    <div class="login-box">
+        <div class="logo">GT</div>
+        <h2>Graphene Trace</h2>
+        <p>Sensore System - Pressure Ulcer Monitoring</p>
+
+        <form asp-action="Login" method="post">
+            <label>Email</label>
+            <input name="Email" type="email" class="input-box" required placeholder="example@gmail.com" />
+
+            <label>Password</label>
+            <input name="Password" type="password" class="input-box" required />
+
+            <button type="submit" class="btn">Login</button>
+        </form>
+
+        <p class="register-link">Don't have an account?
+            <a asp-action="Register">Register</a>
+        </p>
+>>>>>>> e90a0f6ed46d6e329231b29efb5338278c92ab88
     </div>
 </div>

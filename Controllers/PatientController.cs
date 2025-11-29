@@ -2,15 +2,19 @@ using GrapheneTrace.Data;
 using GrapheneTrace.Model;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+<<<<<<< HEAD
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
+=======
+>>>>>>> e90a0f6ed46d6e329231b29efb5338278c92ab88
 
 namespace GrapheneTrace.Controllers
 {
     public class PatientController : Controller
     {
         private readonly ApplicationDbContext _context;
+<<<<<<< HEAD
         private readonly IWebHostEnvironment _env;
 
         public PatientController(ApplicationDbContext context, IWebHostEnvironment env)
@@ -394,6 +398,71 @@ namespace GrapheneTrace.Controllers
         public IActionResult Settings()
         {
             return View();
+=======
+
+        public PatientController(ApplicationDbContext context)
+        {
+            _context = context;
+        }
+
+        // =======================
+        // PATIENT DASHBOARD
+        // =======================
+        public IActionResult Index(int id)
+        {
+            var patient = _context.Patients.Find(id);
+
+            return View(patient);
+        }
+
+        // =======================
+        // ALERT VIEW
+        // =======================
+        public IActionResult Alerts(int patientId)
+        {
+            var alerts = _context.Alerts
+                .Where(a => a.PatientId == patientId)
+                .OrderByDescending(a => a.CreatedAt)
+                .ToList();
+
+            return View(alerts);
+        }
+
+        // =======================
+        // ULCER DATA
+        // =======================
+        public IActionResult UlcerData(int patientId)
+        {
+            var data = _context.SensorReadings
+                .Where(a => a.PatientId == patientId)
+                .OrderByDescending(a => a.Timestamp)
+                .ToList();
+
+            return View(data);
+        }
+
+        // =======================
+        // PROFILE
+        // =======================
+        public IActionResult Profile(int id)
+        {
+            var patient = _context.Patients.Find(id);
+            return View(patient);
+        }
+
+        [HttpPost]
+        public IActionResult UpdateProfile(int id, string contact, string status)
+        {
+            var patient = _context.Patients.Find(id);
+            if (patient == null) return NotFound();
+
+            patient.ContactNumber = contact;
+            patient.CurrentStatus = status;
+
+            _context.SaveChanges();
+
+            return RedirectToAction("Profile", new { id });
+>>>>>>> e90a0f6ed46d6e329231b29efb5338278c92ab88
         }
     }
 }

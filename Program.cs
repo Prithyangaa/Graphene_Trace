@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+<<<<<<< HEAD
 // Load .env
 Env.Load();
 
@@ -12,6 +13,25 @@ var conn = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseMySql(conn, ServerVersion.AutoDetect(conn))
 );
+=======
+// Load .env variables if present
+DotNetEnv.Env.Load();
+
+// Read from environment variables
+var connectionString = $"server={Environment.GetEnvironmentVariable("MYSQL_HOST")};" +
+                       $"port={Environment.GetEnvironmentVariable("MYSQL_PORT")};" +
+                       $"user={Environment.GetEnvironmentVariable("MYSQL_USER")};" +
+                       $"password={Environment.GetEnvironmentVariable("MYSQL_PASSWORD")};" +
+                       $"database={Environment.GetEnvironmentVariable("MYSQL_DATABASE")}";
+
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseMySql(
+        builder.Configuration.GetConnectionString("DefaultConnection"),
+        ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("DefaultConnection"))
+    )
+);
+
+>>>>>>> e90a0f6ed46d6e329231b29efb5338278c92ab88
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddSession();

@@ -2,13 +2,17 @@ using GrapheneTrace.Data;
 using GrapheneTrace.Model;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+<<<<<<< HEAD
 using Microsoft.AspNetCore.Hosting;
+=======
+>>>>>>> e90a0f6ed46d6e329231b29efb5338278c92ab88
 
 namespace GrapheneTrace.Controllers
 {
     public class ClinicianController : Controller
     {
         private readonly ApplicationDbContext _context;
+<<<<<<< HEAD
         private readonly IWebHostEnvironment _env;
 
         public ClinicianController(ApplicationDbContext context, IWebHostEnvironment env)
@@ -401,10 +405,23 @@ namespace GrapheneTrace.Controllers
         // SETTINGS
         // ---------------------------------------------
         public IActionResult Settings()
+=======
+
+        public ClinicianController(ApplicationDbContext context)
+        {
+            _context = context;
+        }
+
+        // =======================
+        // DASHBOARD
+        // =======================
+        public IActionResult Index()
+>>>>>>> e90a0f6ed46d6e329231b29efb5338278c92ab88
         {
             return View();
         }
 
+<<<<<<< HEAD
         // ---------------------------------------------
         // HEATMAP PAGE
         // ---------------------------------------------
@@ -423,6 +440,48 @@ namespace GrapheneTrace.Controllers
             };
 
             return View(vm);
+=======
+        // =======================
+        // VIEW ASSIGNED PATIENTS
+        // =======================
+        public IActionResult MyPatients(int clinicianId)
+        {
+            var patients = _context.ClinicianPatientAssignments
+                .Include(a => a.Patient)
+                .Where(a => a.ClinicianId == clinicianId)
+                .ToList();
+
+            return View(patients);
+        }
+
+        // =======================
+        // PATIENT DETAILS
+        // =======================
+        public IActionResult PatientDetails(int id)
+        {
+            var patient = _context.Patients
+                .FirstOrDefault(p => p.PatientId == id);
+
+            if (patient == null)
+                return NotFound();
+
+            return View(patient);
+        }
+
+        // =======================
+        // UPDATE PATIENT STATUS
+        // =======================
+        [HttpPost]
+        public IActionResult UpdateStatus(int id, string newStatus)
+        {
+            var patient = _context.Patients.Find(id);
+            if (patient == null) return NotFound();
+
+            patient.CurrentStatus = newStatus;
+            _context.SaveChanges();
+
+            return RedirectToAction("PatientDetails", new { id });
+>>>>>>> e90a0f6ed46d6e329231b29efb5338278c92ab88
         }
     }
 }

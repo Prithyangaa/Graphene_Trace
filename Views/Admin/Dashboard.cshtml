@@ -2,6 +2,7 @@
 
 @{
     ViewData["Title"] = "Admin Dashboard";
+<<<<<<< HEAD
 }
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
@@ -295,6 +296,71 @@
                         <li><i class="bi bi-cloud-arrow-up me-1"></i> Backup &amp; restore</li>
                     </ul>
                 </div>
+=======
+
+    dynamic stats = ViewBag.UserStats ?? new { TotalUsers = 0, Patients = 0, Clinicians = 0, Admins = 0 };
+}
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+<div class="container mt-5 mb-5">
+    <h2 class="text-center mb-4">@ViewData["Title"]</h2>
+
+    <div class="row g-4">
+
+        <!-- User Summary -->
+        <div class="col-md-4">
+            <div class="card shadow-sm p-4 rounded-4">
+                <h5>User Summary</h5>
+                <p><strong>Total Users:</strong> @stats.TotalUsers</p>
+                <p><strong>Patients:</strong> @stats.Patients</p>
+                <p><strong>Clinicians:</strong> @stats.Clinicians</p>
+                <p><strong>Admins:</strong> @stats.Admins</p>
+            </div>
+        </div>
+
+        <!-- Manage Patients -->
+        <div class="col-md-4">
+            <div class="card shadow-sm p-4 rounded-4 card-hover" onclick="location.href='/Admin/Patients'">
+                <h5>Manage Patients</h5>
+                <p>View, edit, and remove patient accounts.</p>
+            </div>
+        </div>
+
+        <!-- Manage Clinicians -->
+        <div class="col-md-4">
+            <div class="card shadow-sm p-4 rounded-4 card-hover" onclick="location.href='/Admin/Clinicians'">
+                <h5>Manage Clinicians</h5>
+                <p>View all clinicians and their details.</p>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="row g-4 mt-3">
+
+        <!-- Manage Admins -->
+        <div class="col-md-4">
+            <div class="card p-4 shadow-sm rounded-4" onclick="location.href='/Admin/Admins'">
+                <h5>Manage Admin Accounts</h5>
+                <p>Control admin accounts and privileges.</p>
+            </div>
+        </div>
+
+        <!-- System Settings -->
+        <div class="col-md-4">
+            <div class="card p-4 shadow-sm rounded-4" onclick="location.href='/Admin/Settings'">
+                <h5>Settings</h5>
+                <p>System configuration and security options.</p>
+            </div>
+        </div>
+
+        <!-- Logs -->
+        <div class="col-md-4">
+            <div class="card p-4 shadow-sm rounded-4" onclick="location.href='/Admin/Logs'">
+                <h5>System Logs</h5>
+                <p>Audit logs and activity history.</p>
+>>>>>>> e90a0f6ed46d6e329231b29efb5338278c92ab88
             </div>
         </div>
 

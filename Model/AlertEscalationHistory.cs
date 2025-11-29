@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -27,3 +28,17 @@ namespace GrapheneTrace.Model
     }
 }
 
+=======
+namespace GrapheneTrace.Model
+{
+    public class AlertEscalationHistory
+    {
+        public int EscalationId { get; set; }
+        public int AlertId { get; set; }
+        public required string FromSeverity { get; set; }
+        public required string ToSeverity { get; set; }
+        public DateTime EscalatedAt { get; set; }
+        public string? Comments { get; set; }
+    }
+}
+>>>>>>> e90a0f6ed46d6e329231b29efb5338278c92ab88
